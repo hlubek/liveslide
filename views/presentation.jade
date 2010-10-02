@@ -1,11 +1,15 @@
 h1= presentation.name
 
+a(href='/presentation/' + presentation.name + '/play') Play it
+
 h2 Slides:
 
 ul
   - each slide in presentation.slides
     li
       a(href='/presentation/' + presentation.name + '/slide/' + slide)= slide
+
+
 
 form(action='/presentation/' + presentation.name + '/slide', method='POST')
   label Create new slide

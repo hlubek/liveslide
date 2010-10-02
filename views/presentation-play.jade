@@ -1,4 +1,4 @@
 h1= presentation.name
 div#slideContainer
-  - each slide in presentation.slides
-    div#slide-0(class='bottom shadow')= slide.content
+  - each slide, index in slides
+    div(id='slide-' + index, class='slide', data-slide=slide.name)!= slide.content

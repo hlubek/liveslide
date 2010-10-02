@@ -6,15 +6,15 @@
 var express = require('express'),
     connect = require('connect'),
     jade = require('jade'),
-    Do = require('./lib/do'),
+    io = require('socket.io'),
     utils = require('./lib/utils'),
     couchdb = require('./lib/node-couchdb/couchdb'),
     // TODO Move to JSON config
 	client = couchdb.createClient(5984, 'localhost'),
-	db = client.db('liveslide'),
-	doDb = Do.convert(db, ['view']);
+	db = client.db('liveslide');
 
 var app = module.exports = express.createServer();
+
 
 // Configuration
 
@@ -35,6 +35,7 @@ app.configure('production', function(){
    app.use(connect.errorHandler()); 
 });
 
+/*
 var exceptionError = function(req, res, e) {
     res.writeHead(500, {});
     res.write("Server error");
@@ -44,6 +45,27 @@ var exceptionError = function(req, res, e) {
     e.url = req.url;
     sys.log(JSON.stringify(e, null, 2));
   };
+*/
+
+var clients = {
+	/*
+	"presentationName": {
+		"sessionId": true
+	}
+	
+	*/
+};
+
+var socket = io.listen(app); 
+socket.on('connection', function(client){  
+  // new client is here! 
+  client.on('message', function() {
+  	console.log('socket.io message', JSON.stringify(arguments));
+  });
+  client.on('disconnect', function(){
+  	console.log('socket.io disconnect', JSON.stringify(arguments));
+  });
+});
 
 
 // Routes
@@ -81,18 +103,29 @@ app.get('/presentation/:name', function(req, res) {
 	});
 });
 
-//Play presentation
+// Play presentation
 app.get('/presentation/:name/play', function(req, res) {
 	db.getDoc('presentation-' + req.params.name, function(er, presentation) {
 		if (er) {
 			return res.send(JSON.stringify(er), 500);
 		}
-		res.render('presentation-play.jade', {
-			locals: {
-				title: presentation.name,
-				presentation: presentation
+		db.allDocs({keys: presentation.slides.map(function(name) { return 'presentation-' + presentation.name + '-slide-' + name })}, {include_docs: true}, function(er, data) {
+			if (er) {
+				return res.send(JSON.stringify(er), 500);
 			}
+			var slides = data.rows.map(function(row) {
+				row.doc.content = jade.render(row.doc.content, {});
+				return row.doc;
+			});
+			res.render('presentation-play.jade', {
+				locals: {
+					title: presentation.name,
+					presentation: presentation,
+					slides: slides
+				}
+			});
 		});
+		
 	});
 });
 
@@ -129,13 +162,20 @@ app.get('/presentation/:presentation/slide/:name', function(req, res) {
 		if (er) {
 			return res.send(JSON.stringify(er), 500);
 		}
-		res.render('slide.jade', {
-			locals: {
-				title: req.params.name + ' / ' + req.params.presentation,
-				slide: slide,
-				content: jade.render(slide.content, {})
-			}
-		});
+		
+		content = jade.render(slide.content, {});
+
+		if (req.query && req.query.format == 'partial') {
+			res.send(content);
+		} else {		
+			res.render('slide.jade', {
+				locals: {
+					title: req.params.name + ' / ' + req.params.presentation,
+					slide: slide,
+					content: content
+				}
+			});
+		}
 	});
 });
 
@@ -165,6 +205,13 @@ app.post('/presentation/:presentation/slide/:name', function(req, res) {
 			if (er) {
 				return res.send(JSON.stringify(er), 500);
 			}
+			
+			socket.broadcast(JSON.stringify({
+				type: 'slidechange',
+				presentation: slide.presentation,
+				slide: slide.name
+			}));
+			
 			res.redirect('/presentation/' + slide.presentation + '/slide/' + slide.name);
 		});
 	});
