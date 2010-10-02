@@ -70,11 +70,17 @@ socket.on('connection', function(client){
 
 // Routes
 
-app.get('/', function(req, res){
-    res.render('index.jade', {
-        locals: {
-            title: 'Welcome to LiveSlide'
-        }
+app.get('/', function(req, res) {
+	db.view('app', 'byType', {key: 'presentation'}, function(er, data) {
+		if (er) {
+			return res.send(JSON.stringify(er), 500);
+		}
+		res.render('index.jade', {
+			locals: {
+				title: 'Welcome to LiveSlide',
+				presentations: data.rows.map(function(row) { return row.value; })
+			}
+		});
     });
 });
 
