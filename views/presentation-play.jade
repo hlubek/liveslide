@@ -1,4 +1,2 @@
-h1= presentation.name
 div#slideContainer
-  - each slide, index in slides
-    div(id='slide-' + index, class='slide', data-slide=slide.name)!= slide.content
+  div(class='currentSlide')

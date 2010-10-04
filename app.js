@@ -11,10 +11,12 @@ var express = require('express'),
     couchdb = require('./lib/node-couchdb/couchdb'),
     // TODO Move to JSON config
 	client = couchdb.createClient(5984, 'localhost'),
-	db = client.db('liveslide');
+	db = client.db('liveslide'),
+	initializer = require('./initializer');
 
 var app = module.exports = express.createServer();
 
+initializer.initialize(db);
 
 // Configuration
 
@@ -22,17 +24,17 @@ app.configure(function(){
     app.set('views', __dirname + '/views');
     app.use(connect.bodyDecoder());
     app.use(connect.methodOverride());
-    app.use(connect.compiler({ src: __dirname + '/public', enable: ['less'] }));
+    //app.use(connect.compiler({ src: __dirname + '/public', enable: [] }));
     app.use(app.router);
     app.use(connect.staticProvider(__dirname + '/public'));
 });
 
 app.configure('development', function(){
-    app.use(connect.errorHandler({ dumpExceptions: true, showStack: true })); 
+    app.use(connect.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function(){
-   app.use(connect.errorHandler()); 
+   app.use(connect.errorHandler());
 });
 
 /*
@@ -52,20 +54,50 @@ var clients = {
 	"presentationName": {
 		"sessionId": true
 	}
-	
+
 	*/
 };
 
-var socket = io.listen(app); 
-socket.on('connection', function(client){  
-  // new client is here! 
-  client.on('message', function() {
-  	console.log('socket.io message', JSON.stringify(arguments));
-  });
-  client.on('disconnect', function(){
-  	console.log('socket.io disconnect', JSON.stringify(arguments));
-  });
+var currentPresentationName = null; // Name of presentation currently being played.
+var currentSlide = null; // Name of slide currently being shown.
+
+var socket = io.listen(app);
+socket.on('connection', function(client){
+	// new client is here!
+	client.on('message', function(message) {
+		if (message === 'nextSlide') {
+			currentSlide++;
+			pushCurrentSlideToClient();
+		} else if (message === 'previousSlide') {
+			currentSlide--;
+			pushCurrentSlideToClient();
+		}
+		console.log('socket.io message', JSON.stringify(message));
+	});
+	client.on('disconnect', function(){
+		console.log('socket.io disconnect', JSON.stringify(arguments));
+	});
 });
+
+function pushCurrentSlideToClient() {
+	db.getDoc(currentPresentationName, function(er, presentation) {
+		var currentSlideName = presentation.slides[currentSlide];
+		db.getDoc(currentPresentationName + '-slide-' + currentSlideName, function(er, slide) {
+			slide.content = jade.render(slide.content, {});
+			socket.broadcast(JSON.stringify({type: 'showSlide', slide: slide}));
+		});
+	});
+}
+/*db.allDocs({keys: presentation.slides.map(function(name) { return 'presentation-' + presentation.name + '-slide-' + name })}, {include_docs: true}, function(er, data) {
+			if (er) {
+				return res.send(JSON.stringify(er), 500);
+			}
+			var slides = data.rows.map(function(row) {
+				row.doc.content = jade.render(row.doc.content, {});
+				return row.doc;
+			});
+
+		});*/
 
 
 // Routes
@@ -115,7 +147,16 @@ app.get('/presentation/:name/play', function(req, res) {
 		if (er) {
 			return res.send(JSON.stringify(er), 500);
 		}
-		db.allDocs({keys: presentation.slides.map(function(name) { return 'presentation-' + presentation.name + '-slide-' + name })}, {include_docs: true}, function(er, data) {
+		currentPresentationName = presentation._id;
+		currentSlide = -1;
+
+		res.render('presentation-play.jade', {
+			locals: {
+				title: presentation.name,
+				presentation: presentation
+			}
+		});
+		/*db.allDocs({keys: presentation.slides.map(function(name) { return 'presentation-' + presentation.name + '-slide-' + name })}, {include_docs: true}, function(er, data) {
 			if (er) {
 				return res.send(JSON.stringify(er), 500);
 			}
@@ -123,22 +164,16 @@ app.get('/presentation/:name/play', function(req, res) {
 				row.doc.content = jade.render(row.doc.content, {});
 				return row.doc;
 			});
-			res.render('presentation-play.jade', {
-				locals: {
-					title: presentation.name,
-					presentation: presentation,
-					slides: slides
-				}
-			});
-		});
-		
+
+		});*/
+
 	});
 });
 
 // Create slide
 app.post('/presentation/:presentation/slide', function(req, res) {
 	var slide = { type: 'slide', presentation: req.params.presentation, name: req.body.name, content: 'Empty content' };
-	
+
 	// Save slide
 	db.saveDoc('presentation-' + slide.presentation + '-slide-' + slide.name, slide, function(er, ok) {
 		if (er) {
@@ -168,12 +203,12 @@ app.get('/presentation/:presentation/slide/:name', function(req, res) {
 		if (er) {
 			return res.send(JSON.stringify(er), 500);
 		}
-		
+
 		content = jade.render(slide.content, {});
 
 		if (req.query && req.query.format == 'partial') {
 			res.send(content);
-		} else {		
+		} else {
 			res.render('slide.jade', {
 				locals: {
 					title: req.params.name + ' / ' + req.params.presentation,
@@ -211,13 +246,13 @@ app.post('/presentation/:presentation/slide/:name', function(req, res) {
 			if (er) {
 				return res.send(JSON.stringify(er), 500);
 			}
-			
+
 			socket.broadcast(JSON.stringify({
 				type: 'slidechange',
 				presentation: slide.presentation,
 				slide: slide.name
 			}));
-			
+
 			res.redirect('/presentation/' + slide.presentation + '/slide/' + slide.name);
 		});
 	});
