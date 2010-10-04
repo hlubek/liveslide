@@ -38,7 +38,7 @@ a {
 	top:0;
 	width:100%;
 	height:100%;
-	-webkit-transition: all 1s ease-in-out;
+	-webkit-transition: all 1s;
 	-moz-transition: all 1s ease-in-out;
 	-o-transition: all 1s ease-in-out;
 	transition: all 1s ease-in-out;
@@ -62,8 +62,4 @@ a {
 	/*-webkit-transform:scale(0,0);
 	-webkit-transform-origin: bottom left;*/
 	opacity:0;
-}
-
-/* Presentation Themes */
-#slideContainer.theme-typo3 {
 }

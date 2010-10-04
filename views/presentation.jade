@@ -9,7 +9,10 @@ ul
     li
       a(href='/presentation/' + presentation.name + '/slide/' + slide)= slide
 
-
+form(action='/presentation/' + presentation.name, method='POST')
+  select(name='theme')
+    option(value='typo3') TYPO3
+  input(type='submit', value='Save')
 
 form(action='/presentation/' + presentation.name + '/slide', method='POST')
   label Create new slide

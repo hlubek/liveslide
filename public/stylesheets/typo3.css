@@ -1,0 +1,54 @@
+/* Presentation Themes */
+#slideContainer.theme-typo3 {
+	font-family:Share-Bold;
+	color:white;
+	background-color:black;
+}
+
+#slideContainer.theme-typo3 h1 {
+	font-size:40px;
+	padding-left:30px;
+}
+#slideContainer.theme-typo3 ul {
+	list-style:none;
+
+}
+#slideContainer.theme-typo3 ul li {
+	font-family:Share-Regular;
+	font-size:35px;
+	padding-left:40px;
+	background:url(typo3-logo-color-only-image.png) no-repeat;
+	background-size:20px 20px;
+	background-position:0 5px;
+}
+
+.footer {
+	font-family:Share-Bold;
+	position:absolute;
+	left:0;
+	bottom:0;
+	height:60px;
+	width:100%;
+	background-color:#861518;
+}
+.footer .text {
+	padding:10px;
+}
+.footer .inner {
+	position:absolute;
+	width:300px;
+	height:100%;
+	right:0;
+	top:0;
+	background-color:#5B0F12;
+	border-left: 1px solid #FEFFFE;
+	font-family:Share-Regular;
+	padding:10px;
+	box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	padding:10px;
+}
+.footer .inner b {
+	font-family:Share-Italic;
+	font-size:18px;
+}

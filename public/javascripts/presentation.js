@@ -2,6 +2,7 @@ LiveSlide = {};
 LiveSlide.PresentationClient = {
 	// socket.io object
 	socket: null,
+	animationRunning:false,
 
 	initialize: function() {
 		this.socket = new io.Socket(window.location.host.split(':')[0]);
@@ -14,6 +15,8 @@ LiveSlide.PresentationClient = {
 		});
 		this.nextSlide();
 		jQuery(document).keydown(function(e) {
+			if (LiveSlide.PresentationClient.animationRunning) return;
+
 			if (e.keyCode == 39) {
 				LiveSlide.PresentationClient.nextSlide();
 				return false;
@@ -32,7 +35,8 @@ LiveSlide.PresentationClient = {
 	showSlide: function(slide) {
 		jQuery('#slideContainer').append(jQuery('<div class="nextSlide"></div>').html(slide.content));
 		window.setTimeout(this._startAnimation, 1); // Hack to force a browser re-draw, so he will properly animate the property changes on nextSlide.
-		window.setTimeout(this._slideChanged, 1100);
+		window.setTimeout(this._slideChanged, 1010);
+		LiveSlide.PresentationClient.animationRunning = true;
 	},
 	_startAnimation: function() {
 		jQuery('#slideContainer').addClass('animationRunning');
@@ -42,6 +46,7 @@ LiveSlide.PresentationClient = {
 		jQuery('.nextSlide').addClass('currentSlide');
 		jQuery('#slideContainer').removeClass('animationRunning');
 		jQuery('.nextSlide').removeClass('nextSlide');
+		LiveSlide.PresentationClient.animationRunning = false;
 	}
 };
 

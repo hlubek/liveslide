@@ -37,27 +37,6 @@ app.configure('production', function(){
    app.use(connect.errorHandler());
 });
 
-/*
-var exceptionError = function(req, res, e) {
-    res.writeHead(500, {});
-    res.write("Server error");
-    res.close();
-
-    e.stack = e.stack.split('\n');
-    e.url = req.url;
-    sys.log(JSON.stringify(e, null, 2));
-  };
-*/
-
-var clients = {
-	/*
-	"presentationName": {
-		"sessionId": true
-	}
-
-	*/
-};
-
 var currentPresentationName = null; // Name of presentation currently being played.
 var currentSlide = null; // Name of slide currently being shown.
 
@@ -83,22 +62,13 @@ function pushCurrentSlideToClient() {
 	db.getDoc(currentPresentationName, function(er, presentation) {
 		var currentSlideName = presentation.slides[currentSlide];
 		db.getDoc(currentPresentationName + '-slide-' + currentSlideName, function(er, slide) {
+			if (er) console.log(JSON.stringify(er));
+
 			slide.content = jade.render(slide.content, {});
 			socket.broadcast(JSON.stringify({type: 'showSlide', slide: slide}));
 		});
 	});
 }
-/*db.allDocs({keys: presentation.slides.map(function(name) { return 'presentation-' + presentation.name + '-slide-' + name })}, {include_docs: true}, function(er, data) {
-			if (er) {
-				return res.send(JSON.stringify(er), 500);
-			}
-			var slides = data.rows.map(function(row) {
-				row.doc.content = jade.render(row.doc.content, {});
-				return row.doc;
-			});
-
-		});*/
-
 
 // Routes
 
@@ -141,6 +111,19 @@ app.get('/presentation/:name', function(req, res) {
 	});
 });
 
+// Update presentation properties like theme
+app.post('/presentation/:name', function(req, res) {
+	db.getDoc('presentation-' + req.params.name, function(er, presentation) {
+		presentation.theme = req.body.theme;
+		db.saveDoc(presentation._id, presentation, function(er, ok) {
+			if (er) {
+				return res.send(JSON.stringify(er), 500);
+			}
+			res.redirect('/presentation/' + presentation.name);
+		});
+	});
+});
+
 // Play presentation
 app.get('/presentation/:name/play', function(req, res) {
 	db.getDoc('presentation-' + req.params.name, function(er, presentation) {
@@ -150,23 +133,13 @@ app.get('/presentation/:name/play', function(req, res) {
 		currentPresentationName = presentation._id;
 		currentSlide = -1;
 
-		res.render('presentation-play.jade', {
+		var presentationTheme = (presentation.theme ? presentation.theme : 'default');
+		res.render('../themes/' + presentationTheme + '.jade', {
 			locals: {
 				title: presentation.name,
 				presentation: presentation
 			}
 		});
-		/*db.allDocs({keys: presentation.slides.map(function(name) { return 'presentation-' + presentation.name + '-slide-' + name })}, {include_docs: true}, function(er, data) {
-			if (er) {
-				return res.send(JSON.stringify(er), 500);
-			}
-			var slides = data.rows.map(function(row) {
-				row.doc.content = jade.render(row.doc.content, {});
-				return row.doc;
-			});
-
-		});*/
-
 	});
 });
 
@@ -247,11 +220,8 @@ app.post('/presentation/:presentation/slide/:name', function(req, res) {
 				return res.send(JSON.stringify(er), 500);
 			}
 
-			socket.broadcast(JSON.stringify({
-				type: 'slidechange',
-				presentation: slide.presentation,
-				slide: slide.name
-			}));
+			// TODO: if current slide is visible...
+			//pushCurrentSlideToClient(); // in case the current slide is just changed
 
 			res.redirect('/presentation/' + slide.presentation + '/slide/' + slide.name);
 		});
