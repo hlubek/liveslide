@@ -61,12 +61,30 @@ socket.on('connection', function(client){
 function pushCurrentSlideToClient() {
 	db.getDoc(currentPresentationName, function(er, presentation) {
 		var currentSlideName = presentation.slides[currentSlide];
-		db.getDoc(currentPresentationName + '-slide-' + currentSlideName, function(er, slide) {
-			if (er) console.log(JSON.stringify(er));
+		var nextSlideName = presentation.slides[currentSlide+1];
+		db.getDoc(currentPresentationName + '-slide-' + currentSlideName, function(er, currentSlide) {
+			if (er) {
+				console.log(JSON.stringify(er));
+				return;
+			}
 
-			slide.content = jade.render(slide.content, {});
-			socket.broadcast(JSON.stringify({type: 'showSlide', slide: slide}));
+			currentSlide.content = jade.render(currentSlide.content, {});
+			socket.broadcast(JSON.stringify({type: 'showSlide', slide: currentSlide}));
 		});
+
+		db.getDoc(currentPresentationName + '-slide-' + nextSlideName, function(er, nextSlide) {
+			if (er && er.error === 'not_found') {
+				socket.broadcast(JSON.stringify({type: 'showNextSlide', slide: {
+					content: ''
+				}}));
+				return;
+			}
+
+			nextSlide.content = jade.render(nextSlide.content, {});
+			socket.broadcast(JSON.stringify({type: 'showNextSlide', slide: nextSlide}));
+		});
+
+
 	});
 }
 
@@ -135,6 +153,25 @@ app.get('/presentation/:name/play', function(req, res) {
 
 		var presentationTheme = (presentation.theme ? presentation.theme : 'default');
 		res.render('../themes/' + presentationTheme + '.jade', {
+			locals: {
+				title: presentation.name,
+				presentation: presentation
+			}
+		});
+	});
+});
+
+// Presenter Monitor
+app.get('/presentation/:name/presenter', function(req, res) {
+	db.getDoc('presentation-' + req.params.name, function(er, presentation) {
+		if (er) {
+			return res.send(JSON.stringify(er), 500);
+		}
+		currentPresentationName = presentation._id;
+		currentSlide = -1;
+
+		var presentationTheme = (presentation.theme ? presentation.theme : 'default');
+		res.render('presentation-presenter.jade', {
 			locals: {
 				title: presentation.name,
 				presentation: presentation

@@ -63,3 +63,21 @@ a {
 	-webkit-transform-origin: bottom left;*/
 	opacity:0;
 }
+
+/* PRESENTER MODE */
+#presenterSlideContainer {
+	position:absolute;
+	top:10px;
+	left:10px;
+	width:600px;
+	height:400px;
+	background:black;
+}
+#nextSlideContainer {
+	position:absolute;
+	top:10px;
+	left:630px;
+	width:300px;
+	height:200px;
+	background:black;
+}
