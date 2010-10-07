@@ -2,7 +2,9 @@
 #slideContainer.theme-typo3 {
 	font-family:Share-Bold;
 	color:white;
-	background-color:black;
+	background:url(typo3-logo-color.png) no-repeat black;
+	background-size:150px;
+	background-position:top right;
 }
 
 #slideContainer.theme-typo3 h1 {
@@ -11,7 +13,7 @@
 }
 #slideContainer.theme-typo3 ul {
 	list-style:none;
-
+	margin-right:100px;
 }
 #slideContainer.theme-typo3 ul li {
 	font-family:Share-Regular;
@@ -37,16 +39,17 @@
 .footer .inner {
 	position:absolute;
 	width:300px;
-	height:100%;
+	height:60px;
 	right:0;
 	top:0;
 	background-color:#5B0F12;
 	border-left: 1px solid #FEFFFE;
 	font-family:Share-Regular;
-	padding:10px;
+	padding-left:10px;
+	padding-top:10px;
 	box-sizing:border-box;
+	-moz-box-sizing:border-box;
 	-webkit-box-sizing:border-box;
-	padding:10px;
 }
 .footer .inner b {
 	font-family:Share-Italic;

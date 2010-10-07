@@ -50,23 +50,52 @@ LiveSlide.PresentationClient = {
 	}
 };
 
+LiveSlide.Presenter = {
+	// socket.io object
+	socket: null,
+	initialize: function() {
+		this.socket = new io.Socket(window.location.host.split(':')[0]);
+		this.socket.connect();
+		this.socket.on('message', function(data) {
+			data = jQuery.parseJSON(data);
+			if (data.type === 'showSlide') {
+				LiveSlide.Presenter.showSlide(data.slide);
+			}
+			if (data.type === 'showNextSlide') {
+				LiveSlide.Presenter.showNextSlide(data.slide);
+			}
+		});
+		jQuery(document).keydown(function(e) {
+			if (e.keyCode == 39) {
+				LiveSlide.Presenter.nextSlide();
+				return false;
+			} else if (e.keyCode == 37) {
+				LiveSlide.Presenter.previousSlide();
+				return false;
+			}
+		}, this);
+	},
+	nextSlide: function() {
+		this.socket.send('nextSlide');
+	},
+	previousSlide: function() {
+		this.socket.send('previousSlide');
+	},
+	showSlide: function(slide) {
+		jQuery('#presenterSlideContainer').html(slide.content);
+	},
+	showNextSlide: function(slide) {
+		jQuery('#nextSlideContainer').html(slide.content);
+	},
+};
+
+
 jQuery(function() {
-	/*jQuery('#slideContainer div').addClass('shadow').addClass('hidden');
-	jQuery('#slide-0')
-		.removeClass('hidden')
-		.addClass('bottom');
-
-	jQuery('#slide-1')
-		.removeClass('hidden')
-		.addClass('top');
-	if (jQuery('#slideContainer div').length > 0) {
-		console.log("YEAH");
-
-
-
-	}*/
-
-	if (jQuery('#slideContainer div').length > 0) {
+	if (jQuery('#slideContainer').length > 0) {
 		LiveSlide.PresentationClient.initialize();
+	}
+
+	if (jQuery('#presenterSlideContainer').length > 0) {
+		LiveSlide.Presenter.initialize();
 	}
 });
