@@ -63,9 +63,10 @@ function pushCurrentSlideToClient() {
 		var currentSlideName = presentation.slides[currentSlide];
 		db.getDoc(currentPresentationName + '-slide-' + currentSlideName, function(er, slide) {
 			if (er) console.log(JSON.stringify(er));
-
-			slide.content = jade.render(slide.content, {});
-			socket.broadcast(JSON.stringify({type: 'showSlide', slide: slide}));
+			if (slide) {
+				slide.content = jade.render(slide.content, {});
+				socket.broadcast(JSON.stringify({type: 'showSlide', slide: slide}));
+			}
 		});
 	});
 }

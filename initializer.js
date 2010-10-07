@@ -1,6 +1,5 @@
 exports.initialize = function(db) {
 	db.exists(function(er, exists) {
-
 		if (!exists) {
 			console.log("Creating fresh database!");
 			db.create(function() {
