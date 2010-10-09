@@ -20,14 +20,14 @@ exports.initialize = function(db) {
 }
 
 function createExampleData(db) {
-	var presentation, slide1, slide2;
+	var presentation, slide1, slide2, slide3;
 	presentation = {
 		_id: 'presentation-welcome',
 		type: 'presentation',
 
 		name: 'welcome',
 		theme: 'typo3',
-		slides: ['introduction', 'end']
+		slides: ['introduction', 'animations', 'end']
 	};
 	db.saveDoc(presentation._id, presentation);
 
@@ -46,6 +46,22 @@ function createExampleData(db) {
 	db.saveDoc(slide1._id, slide1);
 
 	slide2 = {
+		_id: 'presentation-welcome-slide-animations',
+		type: 'slide',
+
+		presentation: 'welcome',
+		name: 'animations',
+		content: 'h1 Animations \n'
+			+'\n'
+			+'ul\n'
+			+'  li LiveSlide supports slide transitions by default...\n'
+			+'  li(class="show-1")\n'
+			+'    | And also in-slide animation. Just add a CSS class with the name "show-XX" to the element you want animated:-)\n',
+		animationSteps: 1
+	};
+	db.saveDoc(slide2._id, slide2);
+
+	slide3 = {
 		_id: 'presentation-welcome-slide-end',
 		type: 'slide',
 
@@ -57,5 +73,5 @@ function createExampleData(db) {
 			+'  li This is the end of the LiveSlide walkthrough. Thanks for joining!\n'
 			+'  li Have fun :-)\n'
 	};
-	db.saveDoc(slide2._id, slide2);
+	db.saveDoc(slide3._id, slide3);
 }

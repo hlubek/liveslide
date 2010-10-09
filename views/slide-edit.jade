@@ -3,4 +3,5 @@ h1= slide.name
 form#slide-edit(action='/presentation/' + slide.presentation + '/slide/' + slide.name, method='POST')
   textarea(name='content')= slide.content
   br
+  input(type='text', name='animationSteps', value=slide.animationSteps)
   input(type='submit', value='Save')

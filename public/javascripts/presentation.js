@@ -11,6 +11,8 @@ LiveSlide.PresentationClient = {
 			data = jQuery.parseJSON(data);
 			if (data.type === 'showSlide') {
 				LiveSlide.PresentationClient.showSlide(data.slide);
+			} else if (data.type === 'showSlidePart') {
+				LiveSlide.PresentationClient.showSlidePart(data.slidePart);
 			}
 		});
 		this.nextSlide();
@@ -36,6 +38,11 @@ LiveSlide.PresentationClient = {
 	},
 	showSlide: function(slide) {
 		jQuery('#slideContainer').append(jQuery('<div class="nextSlide"></div>').html(slide.content));
+
+			// Hide in-slide animation parts
+		for (var i=1; i<=slide.animationSteps; i++) {
+			jQuery('#slideContainer .nextSlide .show-'+i).addClass('inSlideAnimation').addClass('hidden');
+		}
 		window.setTimeout(this._startAnimation, 1); // Hack to force a browser re-draw, so he will properly animate the property changes on nextSlide.
 		window.setTimeout(this._slideChanged, 1010);
 		LiveSlide.PresentationClient.animationRunning = true;
@@ -49,6 +56,10 @@ LiveSlide.PresentationClient = {
 		jQuery('#slideContainer').removeClass('animationRunning');
 		jQuery('.nextSlide').removeClass('nextSlide');
 		LiveSlide.PresentationClient.animationRunning = false;
+	},
+	// Slide Part
+	showSlidePart: function(slidePart) {
+		jQuery('#slideContainer .show-'+slidePart).removeClass('hidden');
 	},
 	// Resize the whole outer container
 	_resizeOuterContainer: function() {

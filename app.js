@@ -39,14 +39,23 @@ app.configure('production', function(){
 
 var currentPresentationName = null; // Name of presentation currently being played.
 var currentSlide = null; // Name of slide currently being shown.
+var currentSlideAnimationSteps = 0; // Number of slide animation steps. Used for in-slide animations.
+var currentSlidePart = 0; // Number of slide part which is currently being shown. Used for in-slide animations.
 
 var socket = io.listen(app);
 socket.on('connection', function(client){
 	// new client is here!
 	client.on('message', function(message) {
 		if (message === 'nextSlide') {
-			currentSlide++;
-			pushCurrentSlideToClient();
+			if (currentSlideAnimationSteps > 0 && currentSlidePart < currentSlideAnimationSteps) {
+				// We want to animate the current slide, instead of showing a new one.
+				currentSlidePart++;
+				socket.broadcast(JSON.stringify({type: 'showSlidePart', slidePart: currentSlidePart}));
+			} else {
+				// We want to show a new slide.
+				currentSlide++;
+				pushCurrentSlideToClient();
+			}
 		} else if (message === 'previousSlide') {
 			currentSlide--;
 			pushCurrentSlideToClient();
@@ -67,7 +76,8 @@ function pushCurrentSlideToClient() {
 				console.log(JSON.stringify(er));
 				return;
 			}
-
+			currentSlideAnimationSteps = currentSlide.animationSteps;
+			currentSlidePart = 0;
 			currentSlide.content = jade.render(currentSlide.content, {});
 			socket.broadcast(JSON.stringify({type: 'showSlide', slide: currentSlide}));
 		});
@@ -182,7 +192,7 @@ app.get('/presentation/:name/presenter', function(req, res) {
 
 // Create slide
 app.post('/presentation/:presentation/slide', function(req, res) {
-	var slide = { type: 'slide', presentation: req.params.presentation, name: req.body.name, content: 'Empty content' };
+	var slide = { type: 'slide', presentation: req.params.presentation, name: req.body.name, content: 'Empty content', animationSteps: 0 };
 
 	// Save slide
 	db.saveDoc('presentation-' + slide.presentation + '-slide-' + slide.name, slide, function(er, ok) {
@@ -236,6 +246,7 @@ app.get('/presentation/:presentation/slide/:name/edit', function(req, res) {
 		if (er) {
 			return res.send(JSON.stringify(er), 500);
 		}
+
 		res.render('slide-edit.jade', {
 			locals: {
 				title: 'Edit ' + req.params.name + ' / ' + req.params.presentation,
@@ -252,6 +263,7 @@ app.post('/presentation/:presentation/slide/:name', function(req, res) {
 			return res.send(JSON.stringify(er), 500);
 		}
 		slide.content = req.body.content;
+		slide.animationSteps = parseInt(req.body.animationSteps);
 		db.saveDoc('presentation-' + slide.presentation + '-slide-' + slide.name, slide, function(er, ok) {
 			if (er) {
 				return res.send(JSON.stringify(er), 500);

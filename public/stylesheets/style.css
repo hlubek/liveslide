@@ -53,6 +53,18 @@ a {
 	transition: all 1s ease-in-out;
 }
 
+/* Animations within a slide */
+#slideContainer .inSlideAnimation {
+	opacity:1;
+	-webkit-transition: all 1s ease-in-out;
+	-moz-transition: all 1s ease-in-out;
+	-o-transition: all 1s ease-in-out;
+	transition: all 1s ease-in-out;
+}
+#slideContainer .inSlideAnimation.hidden {
+	opacity:0;
+}
+
 /* Fade in the next slide */
 #slideContainer .nextSlide {
 	opacity:0;
