@@ -51,13 +51,23 @@ function createExampleData(db) {
 
 		presentation: 'welcome',
 		name: 'animations',
-		content: 'h1 Animations \n'
-			+'\n'
-			+'ul\n'
-			+'  li LiveSlide supports slide transitions by default...\n'
-			+'  li(class="show-1")\n'
-			+'    | And also in-slide animation. Just add a CSS class with the name "show-XX" to the element you want animated:-)\n',
-		animationSteps: 1
+		content: 'h1 Animations \n\
+\n\
+ul \n\
+  li LiveSlide supports slide transitions by default... \n\
+  li(class="show-1") \n\
+    | And also in-slide animation. \n\
+    ul \n\
+      li Specify the number of in-slide animations in the slide editor. \n\
+      li(class="show-2") Add the css class <b>show-[number]</b> to the elements you want to animate.  [number] specifies the animation order. \n\
+      li(class="show-3") With the property <b>anim-[number]</b> the effect can be specified. \n\
+      li(class="show-4", anim-4="rotate") <b>rotate</b> effect. \n\
+      li(class="show-5", anim-5="moveFromLeft") <b>moveFromLeft</b> is also possible. \n\
+      li(class="show-6", anim-6="moveFromRight") <b>moveFromRight</b> is also possible. \n\
+      li(class="show-7", anim-7="moveFromTop") <b>moveFromTop</b> is also possible. \n\
+      li(class="show-8", anim-8="moveFromBottom") <b>moveFromBottom</b> is also possible. \n\
+',
+		animationSteps: 8
 	};
 	db.saveDoc(slide2._id, slide2);
 

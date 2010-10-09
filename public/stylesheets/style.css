@@ -3,6 +3,7 @@ body {
   color: #ddd;
   padding: 50px;
   font: 16px "Helvetica Nueue", Arial, sans-serif;
+  overflow:hidden;
 }
 
 a {
@@ -31,6 +32,7 @@ a {
 	width:1024px;
 	-moz-transform-origin: 0 0;
 	-webkit-transform-origin: 0 0;
+	overflow:hidden;
 }
 #slideContainer {
 	position:absolute;
@@ -53,18 +55,9 @@ a {
 	transition: all 1s ease-in-out;
 }
 
-/* Animations within a slide */
-#slideContainer .inSlideAnimation {
-	opacity:1;
-	-webkit-transition: all 1s ease-in-out;
-	-moz-transition: all 1s ease-in-out;
-	-o-transition: all 1s ease-in-out;
-	transition: all 1s ease-in-out;
-}
-#slideContainer .inSlideAnimation.hidden {
-	opacity:0;
-}
-
+/*===========================*/
+/* Slide Transitions         */
+/*===========================*/
 /* Fade in the next slide */
 #slideContainer .nextSlide {
 	opacity:0;
@@ -95,4 +88,64 @@ a {
 	-moz-transform:scale(0.5);
 	-webkit-transform:scale(0.5);
 	left:50%;
+}
+
+/*===========================*/
+/* Animations within a slide */
+/*===========================*/
+
+/* Basic Setup */
+#slideContainer .inSlideAnimation {
+	opacity:1;
+	-webkit-transition: all 1s ease-in-out;
+	-moz-transition: all 1s ease-in-out;
+	-o-transition: all 1s ease-in-out;
+	transition: all 1s ease-in-out;
+}
+#slideContainer .inSlideAnimation.hidden {
+	opacity:0;
+}
+
+/* Rotate function */
+#slideContainer .inSlideAnimation.show.rotate.hidden {
+	-webkit-transform:rotate(720deg);
+}
+#slideContainer .inSlideAnimation.show.rotate {
+	-webkit-transform:rotate(0deg);
+}
+
+/* move from left */
+#slideContainer .inSlideAnimation.show.moveFromLeft.hidden {
+	left:-400px;
+}
+#slideContainer .inSlideAnimation.show.moveFromLeft {
+	position:relative;
+	left:0px;
+}
+
+/* move from right */
+#slideContainer .inSlideAnimation.show.moveFromRight.hidden {
+	left:1024px;
+}
+#slideContainer .inSlideAnimation.show.moveFromRight {
+	position:relative;
+	left:0px;
+}
+
+/* move from top */
+#slideContainer .inSlideAnimation.show.moveFromTop.hidden {
+	top:-768px;
+}
+#slideContainer .inSlideAnimation.show.moveFromTop {
+	position:relative;
+	top:0px;
+}
+
+/* move from bottom */
+#slideContainer .inSlideAnimation.show.moveFromBottom.hidden {
+	top:768px;
+}
+#slideContainer .inSlideAnimation.show.moveFromBottom {
+	position:relative;
+	top:0px;
 }

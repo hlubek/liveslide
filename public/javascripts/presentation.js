@@ -39,9 +39,18 @@ LiveSlide.PresentationClient = {
 	showSlide: function(slide) {
 		jQuery('#slideContainer').append(jQuery('<div class="nextSlide"></div>').html(slide.content));
 
-			// Hide in-slide animation parts
+			// Set up in-slide animation
 		for (var i=1; i<=slide.animationSteps; i++) {
+			// Hide all not yet shown in-slide animations
 			jQuery('#slideContainer .nextSlide .show-'+i).addClass('inSlideAnimation').addClass('hidden');
+			jQuery('#slideContainer .show-'+i).each(function(index, element) {
+				jQuery(element).addClass('show');
+				var animationConfiguration = jQuery(element).attr('anim-'+i);
+				if (animationConfiguration === undefined) {
+					animationConfiguration = 'fade';
+				}
+				jQuery(element).addClass(animationConfiguration);
+			});
 		}
 		window.setTimeout(this._startAnimation, 1); // Hack to force a browser re-draw, so he will properly animate the property changes on nextSlide.
 		window.setTimeout(this._slideChanged, 1010);
