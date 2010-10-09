@@ -149,3 +149,19 @@ a {
 	position:relative;
 	top:0px;
 }
+
+/* stamp */
+#slideContainer .inSlideAnimation.show.stamp.hidden {
+	-webkit-transform:scale(3);
+}
+#slideContainer .inSlideAnimation.show.stamp {
+	-webkit-transform:scale(1);
+}
+
+/* cube */
+#slideContainer .inSlideAnimation.show.cube.hidden {
+	-webkit-transform:rotateY(90deg);
+}
+#slideContainer .inSlideAnimation.show.cube {
+	-webkit-transform:rotateY(0);
+}

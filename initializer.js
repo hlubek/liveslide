@@ -27,7 +27,7 @@ function createExampleData(db) {
 
 		name: 'welcome',
 		theme: 'typo3',
-		slides: ['introduction', 'animations', 'code', 'end']
+		slides: ['introduction', 'animations', 'additional-animations', 'code', 'end']
 	};
 	db.saveDoc(presentation._id, presentation);
 
@@ -105,4 +105,19 @@ pre(class="prettyprint")\n\
 			+'  li Have fun :-)\n'
 	};
 	db.saveDoc(slide4._id, slide4);
+
+	slide5 = {
+		_id: 'presentation-welcome-slide-additional-animations',
+		type: 'slide',
+
+		presentation: 'welcome',
+		name: 'additional-animations',
+		content: 'h1 Additional Animations\n\
+\n\
+ul\n\
+  li(class="show-1", anim-1="stamp") Stamp effect\n\
+  li(class="show-2", anim-2="cube") Cube effect',
+		animationSteps: 2
+	};
+	db.saveDoc(slide5._id, slide5);
 }
