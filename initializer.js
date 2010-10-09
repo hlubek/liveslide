@@ -83,7 +83,13 @@ pre(class="prettyprint")\n\
   | &lt;xml&gt;\n\
   |   SomeText\n\
   | &lt;/xml&gt;\n\
-'	};
+pre(class="prettyprint")\n\
+  :cdata\n\
+    | <br />\n\
+    | protected $bla = \'Test\';\n\
+    | protected function myFunction($a, $b, $c) {\n\
+    |   $this->bla = $a;\n\
+    | }'	};
 	db.saveDoc(slide3._id, slide3);
 
 	slide4 = {
