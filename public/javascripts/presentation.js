@@ -52,6 +52,7 @@ LiveSlide.PresentationClient = {
 				jQuery(element).addClass(animationConfiguration);
 			});
 		}
+		prettyPrint();
 		window.setTimeout(this._startAnimation, 1); // Hack to force a browser re-draw, so he will properly animate the property changes on nextSlide.
 		window.setTimeout(this._slideChanged, 1010);
 		LiveSlide.PresentationClient.animationRunning = true;
@@ -133,4 +134,6 @@ jQuery(function() {
 	} else if (jQuery('.outerContainer').length > 0) {
 		LiveSlide.PresentationClient.initialize();
 	}
+
+	prettyPrint();
 });

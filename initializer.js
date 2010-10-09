@@ -27,7 +27,7 @@ function createExampleData(db) {
 
 		name: 'welcome',
 		theme: 'typo3',
-		slides: ['introduction', 'animations', 'end']
+		slides: ['introduction', 'animations', 'code', 'end']
 	};
 	db.saveDoc(presentation._id, presentation);
 
@@ -72,6 +72,21 @@ ul \n\
 	db.saveDoc(slide2._id, slide2);
 
 	slide3 = {
+		_id: 'presentation-welcome-slide-code',
+		type: 'slide',
+
+		presentation: 'welcome',
+		name: 'code',
+		content: 'h1 Code highlighting\n\
+\n\
+pre(class="prettyprint")\n\
+  | &lt;xml&gt;\n\
+  |   SomeText\n\
+  | &lt;/xml&gt;\n\
+'	};
+	db.saveDoc(slide3._id, slide3);
+
+	slide4 = {
 		_id: 'presentation-welcome-slide-end',
 		type: 'slide',
 
@@ -83,5 +98,5 @@ ul \n\
 			+'  li This is the end of the LiveSlide walkthrough. Thanks for joining!\n'
 			+'  li Have fun :-)\n'
 	};
-	db.saveDoc(slide3._id, slide3);
+	db.saveDoc(slide4._id, slide4);
 }
