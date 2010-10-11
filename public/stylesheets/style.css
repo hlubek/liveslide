@@ -65,12 +65,14 @@ a {
 
 #slideContainer.animationRunning .nextSlide {
 	opacity:1;
+	-webkit-font-smoothing: antialiased; /* HACK: Makes sure there is no jumping when opacity reaches 1. Alternatively, set opacity to 0.99. */
 	/*-webkit-transform:scale(1,1);
 	-webkit-transform-origin: top right;*/
 }
 
 #slideContainer .currentSlide {
 	opacity:1;
+	-webkit-font-smoothing: antialiased; /* HACK: Makes sure there is no jumping when opacity reaches 1. Alternatively, set opacity to 0.99. */
 }
 #slideContainer.animationRunning .currentSlide {
 	/*-webkit-transform:scale(0,0);
