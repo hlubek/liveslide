@@ -1,5 +1,19 @@
-h1= presentation.name
-p Presenter Screen
+div(class="outerContainer presenter")
+  div#slideContainer(class='theme-' + presentation.theme)
+  // TODO: needs to be refactored, as the markup below actually belongs to the presentation theme.
+  div(class='footer')
+    div(class='text') presentation name
+    div(class='inner')
+      | Inspiring people to
+      br
+      b share
 
-div#presenterSlideContainer(class='theme-' + presentation.theme)
-div#nextSlideContainer
+div(class="outerContainer presenter-nextSlide")
+  div#slideContainer(class='theme-' + presentation.theme)
+  // TODO: needs to be refactored, as the markup below actually belongs to the presentation theme.
+  div(class='footer')
+    div(class='text') presentation name
+    div(class='inner')
+      | Inspiring people to
+      br
+      b share

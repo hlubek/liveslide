@@ -5,10 +5,10 @@ html {
 body {
   background: #464646;
   color: #ddd;
-  font: 16px "Helvetica Nueue", Arial, sans-serif;
+  font: 16px "Helvetica Neue", Arial, sans-serif;
+  overflow: hidden;
   padding: 0;
   margin: 0;
-  height: 100%;
 }
 
 a {
@@ -101,6 +101,16 @@ a.presentation-name {
 
 
 /* PLAY MODE */
+.outerContainer {
+	position:absolute;
+	top:0;
+	left:0;
+	height:768px;
+	width:1024px;
+	-moz-transform-origin: 0 0;
+	-webkit-transform-origin: 0 0;
+	overflow:hidden;
+}
 #slideContainer {
 	position:absolute;
 	top:0;
@@ -116,12 +126,15 @@ a.presentation-name {
 	top:0;
 	width:100%;
 	height:100%;
-	-webkit-transition: all 1s;
+	-webkit-transition: all 1s ease-in-out;
 	-moz-transition: all 1s ease-in-out;
 	-o-transition: all 1s ease-in-out;
 	transition: all 1s ease-in-out;
 }
 
+/*===========================*/
+/* Slide Transitions         */
+/*===========================*/
 /* Fade in the next slide */
 #slideContainer .nextSlide {
 	opacity:0;
@@ -129,12 +142,14 @@ a.presentation-name {
 
 #slideContainer.animationRunning .nextSlide {
 	opacity:1;
+	-webkit-font-smoothing: antialiased; /* HACK: Makes sure there is no jumping when opacity reaches 1. Alternatively, set opacity to 0.99. */
 	/*-webkit-transform:scale(1,1);
 	-webkit-transform-origin: top right;*/
 }
 
 #slideContainer .currentSlide {
 	opacity:1;
+	-webkit-font-smoothing: antialiased; /* HACK: Makes sure there is no jumping when opacity reaches 1. Alternatively, set opacity to 0.99. */
 }
 #slideContainer.animationRunning .currentSlide {
 	/*-webkit-transform:scale(0,0);
@@ -143,19 +158,89 @@ a.presentation-name {
 }
 
 /* PRESENTER MODE */
-#presenterSlideContainer {
-	position:absolute;
-	top:10px;
-	left:10px;
-	width:600px;
-	height:400px;
-	background:black;
+.outerContainer.presenter {
+	-moz-transform:scale(0.5);
+	-webkit-transform:scale(0.5);
 }
-#nextSlideContainer {
-	position:absolute;
-	top:10px;
-	left:630px;
-	width:300px;
-	height:200px;
-	background:black;
+
+.outerContainer.presenter-nextSlide {
+	-moz-transform:scale(0.5);
+	-webkit-transform:scale(0.5);
+	left:50%;
+}
+
+/*===========================*/
+/* Animations within a slide */
+/*===========================*/
+
+/* Basic Setup */
+#slideContainer .inSlideAnimation {
+	opacity:1;
+	-webkit-transition: all 1s ease-in-out;
+	-moz-transition: all 1s ease-in-out;
+	-o-transition: all 1s ease-in-out;
+	transition: all 1s ease-in-out;
+}
+#slideContainer .inSlideAnimation.hidden {
+	opacity:0;
+}
+
+/* Rotate function */
+#slideContainer .inSlideAnimation.show.rotate.hidden {
+	-webkit-transform:rotate(720deg);
+}
+#slideContainer .inSlideAnimation.show.rotate {
+	-webkit-transform:rotate(0deg);
+}
+
+/* move from left */
+#slideContainer .inSlideAnimation.show.moveFromLeft.hidden {
+	left:-400px;
+}
+#slideContainer .inSlideAnimation.show.moveFromLeft {
+	position:relative;
+	left:0px;
+}
+
+/* move from right */
+#slideContainer .inSlideAnimation.show.moveFromRight.hidden {
+	left:1024px;
+}
+#slideContainer .inSlideAnimation.show.moveFromRight {
+	position:relative;
+	left:0px;
+}
+
+/* move from top */
+#slideContainer .inSlideAnimation.show.moveFromTop.hidden {
+	top:-768px;
+}
+#slideContainer .inSlideAnimation.show.moveFromTop {
+	position:relative;
+	top:0px;
+}
+
+/* move from bottom */
+#slideContainer .inSlideAnimation.show.moveFromBottom.hidden {
+	top:768px;
+}
+#slideContainer .inSlideAnimation.show.moveFromBottom {
+	position:relative;
+	top:0px;
+}
+
+/* stamp */
+#slideContainer .inSlideAnimation.show.stamp.hidden {
+	-webkit-transform:scale(3);
+}
+#slideContainer .inSlideAnimation.show.stamp {
+	-webkit-transform:scale(1);
+}
+
+/* cube */
+#slideContainer .inSlideAnimation.show.cube.hidden {
+	-webkit-transform:rotateY(90deg);
+}
+#slideContainer .inSlideAnimation.show.cube {
+	-webkit-transform:rotateY(0);
 }

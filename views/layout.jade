@@ -2,12 +2,16 @@
 html
   head
     title= title
+    script(type='text/javascript', src='/javascripts/jquery.min.js')
+    script(type='text/javascript', src='/javascripts/socket.io.js')
+    //script(src='http://cdn.socket.io/stable/socket.io.js')
+    link(rel='stylesheet', href='/stylesheets/prettify.css')
+    script(type='text/javascript', src='/javascripts/prettify/prettify.js')
+
+    script(type='text/javascript', src='/javascripts/presentation.js')
     link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel='stylesheet', href='/stylesheets/typo3.css')
-    script(type='text/javascript', src='/javascripts/jquery.min.js')
-    script(src='http://cdn.socket.io/stable/socket.io.js')
-    script(type='text/javascript', src='/javascripts/presentation.js')
-  body
+   body
     #header
       a#logo(href="/") LiveSlide
     != body
