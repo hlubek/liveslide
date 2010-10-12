@@ -88,19 +88,45 @@ function pushCurrentSlideToClient() {
 	});
 }
 
+function slideId(presentationName, slideName) {
+	return 'presentation-' + presentationName + '-slide-' + slideName;
+};
+
+
+
 // Routes
 
 app.get('/', function(req, res) {
 	db.view('app', 'byType', {key: 'presentation'}, function(er, data) {
+		var presentations, titleslideIds;
 		if (er) {
 			return res.send(JSON.stringify(er), 500);
 		}
-		res.render('index.jade', {
-			locals: {
-				title: 'Welcome to LiveSlide',
-				presentations: data.rows.map(function(row) { return row.value; })
-			}
+
+		presentations = data.rows.map(function(row) { return row.value; });
+		titleslideIds = presentations.map(function(presentation) {
+			return slideId(presentation.name, presentation.slides[0]);
 		});
+
+		db.allDocs({keys: titleslideIds}, {include_docs: true}, function(er, data) {
+			var titleslides = {};
+			if (er) {
+				return res.send(JSON.stringify(er), 500);
+			}
+			data.rows.forEach(function(row) {
+				if (row.error) return;
+				titleslides[row.doc.presentation] = row.doc;
+				titleslides[row.doc.presentation].content = jade.render(row.doc.content, {});
+			});
+
+			res.render('index.jade', {
+				locals: {
+					title: 'Welcome to LiveSlide',
+					presentations: presentations,
+					titleslides: titleslides
+				}
+			});
+		});		
     });
 });
 

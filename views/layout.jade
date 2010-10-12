@@ -7,4 +7,7 @@ html
     script(type='text/javascript', src='/javascripts/jquery.min.js')
     script(src='http://cdn.socket.io/stable/socket.io.js')
     script(type='text/javascript', src='/javascripts/presentation.js')
-  body!= body
+  body
+    #header
+      a#logo(href="/") LiveSlide
+    != body

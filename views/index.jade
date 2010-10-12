@@ -1,12 +1,16 @@
-h1= title
-p The first realtime collaborative slide presentation system
+#content.with-sidebar
+  #sidebar
+    .presentation-thumb-list
+      - each presentation in presentations
+        .presentation-thumb
+          .presentation-titleslide!= titleslides[presentation.name].content
+          a.presentation-name(href='/presentation/' + presentation.name)= presentation.name
 
-ul
-  - each presentation in presentations
-    li
-      a(href='/presentation/' + presentation.name)= presentation.name
+  #right
+    h1= title
+    p The first realtime collaborative slide presentation system
 
-form(action='/presentation', method='POST')
-  label Create new presentation
-  input(type='text', name='name')
-  input(type='submit', value='Do it!')
+    form(action='/presentation', method='POST')
+      label Create new presentation
+      input(type='text', name='name')
+      input(type='submit', value='Do it!')
